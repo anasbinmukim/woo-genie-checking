@@ -250,33 +250,33 @@ class WC_Gateway_Genie_Checking extends WC_Payment_Gateway {
 				return urlencode(base64_encode($result));
 		}
 
-		public function update_genie_order($order_id_value, $result_value, $requestno_value, $msg_value,$status){
+		public function update_genie_order($order_id_value, $result_value, $requestno_value, $msg_value, $status){
 				global $woocommerce;
 				$order = new WC_Order( $order_id_value );
 				if($status == 'cancel'){
-					 $order->add_order_note( __( 'Error', 'woo-genie-checking' ) . $status );
-						wc_add_notice($status, $notice_type = 'error' );
-						$checkout_url = wc_get_cart_url();
-						$this->custom_thank_you($checkout_url);
+					 $order->update_status( 'cancelled', __( 'Payment was cancelled', 'woo-genie-checking' ) );
+					 $checkout_url = wc_get_cart_url();
+					 $this->custom_thank_you($checkout_url);
 				}
 
-				if ($result_value == '0' ) {
+				if ($result_value == 0 ) {
 						$result = "success";
+						//waiting for payment confirmation
 						if($status == 'pending'){
-								wc_add_notice( __( 'Thank you.  You will be required to respond to a text message or E-Mail to complete this payment.', 'woo-genie-checking' ) );
-								$order->update_status( 'pending', __( 'You will be required to respond to a text message or E-Mail to complete this payment.', 'woo-genie-checking' ) );
-						}else{
-								$order->add_order_note( __( 'Request Number', 'woo-genie-checking' ) . $requestno_value );
+								$order->update_status( 'pending', __( 'Waiting for payment confirmation.', 'woo-genie-checking' ) );
+								//You will be required to respond to a text message or E-Mail to complete this payment.
+								WC()->cart->empty_cart();
+						}
+
+						if(($status == 'approve') || ($status == 'approved')){
+								$order->reduce_order_stock();
 								$order->payment_complete();
 						}
 
-						$order->reduce_order_stock();
-						WC()->cart->empty_cart();
-						$order = new WC_Order($order_id_value);
-						$key = $order->order_key;
 						$redirect_url =  $order->get_checkout_order_received_url();
 						$this->custom_thank_you($redirect_url);
-				}else{
+
+				}elseif ($result_value == 1 ){
 						$result = "Unknown Error";
 						if($status == 'expire'){
 								$order->update_status( 'failed', __( 'Payment expired', 'woo-genie-checking' ) );
@@ -285,8 +285,6 @@ class WC_Gateway_Genie_Checking extends WC_Payment_Gateway {
 						}elseif($status == 'cancel'){
 								$order->update_status( 'failed', __( 'Payment cenceled', 'woo-genie-checking' ) );
 						}
-						$order->add_order_note( __( 'Error', 'woo-genie-checking' ) . $status );
-						//wc_add_notice($status, $notice_type = 'error' );
 						$redirect_url =  $order->get_checkout_order_received_url();
 						$this->custom_thank_you($redirect_url);
 				}
@@ -342,28 +340,12 @@ class WC_Gateway_Genie_Checking extends WC_Payment_Gateway {
 			$get_callback_url   = home_url('/?geniechecking_callback=');
 			$param              = sprintf("cashbox=%s&amount=%s&orderid=%s&cellphone=%s&email=%s&firstname=%s&lastname=%s&company=%s&country=%s&address1=%s&address2=%s&city=%s&state=%s&zip=%s&description=%s&expiremin=%s&plugin=%s&ReturnURL=%s",$cashbox,$amount,$orderid,$cellphone,$email,$firstname,$lastname,$company,$country,$address1,$address2,$city,$state,$zip,$description,$expiremin,'woocommerce',$get_callback_url);
 			$urlenc             = $this->encrypt_pol($param);
-
-			$response           = wp_remote_get( $environment_url, array(
-																 'method'    => 'GET',
-																 'body'      => http_build_query(  $urlenc ),
-																 'timeout'   => 90,
-																 'sslverify' => false,
-															) );
-
 			$new_request        = $environment_url . $urlenc;
-
-			// echo $new_request;
-			// return;
 
 			return array(
 					'result' => 'success',
 					'redirect' => $new_request
 			);
-
-			// return array(
-			// 	'result' 	=> 'error',
-			// 	'redirect'	=> $this->get_return_url( $order )
-			// );
 
 		}
 
