@@ -30,13 +30,13 @@ e.g.
 == Frequently Asked Questions ==
 
 = How do I setup API? =
-You need to signup here https://geniecashbox.com/
+You need to signup here https://geniecashbox.com/ or https://geniechecking.com/signup.php
 
 == Screenshots ==
 
 1. The screenshot (assets/screenshot-1.png) show gateway common settings, here all fields are self descriptive.
-2. The screenshot (assets/screenshot-2.png) show mycelium gear API settings
-3. The screenshot (assets/screenshot-3.png) Show front end payment gateway select to pay using mycelium gear.
+2. The screenshot (assets/screenshot-2.png) show cash number API settings
+3. The screenshot (assets/screenshot-3.png) Show front end payment gateway select to pay using genie checking.
 
 == Changelog ==
 

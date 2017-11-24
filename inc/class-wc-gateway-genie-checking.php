@@ -121,8 +121,9 @@ class WC_Gateway_Genie_Checking extends WC_Payment_Gateway {
      * Output for the order received page.
      */
 		public function thankyou_page() {
-			if ( $this->instructions )
-	        	echo wpautop( wptexturize( $this->instructions ) );
+			if ( $this->instructions ){
+				echo wpautop( wptexturize( $this->instructions ) );
+			}
 		}
 
 
@@ -150,15 +151,6 @@ class WC_Gateway_Genie_Checking extends WC_Payment_Gateway {
 			if ( $this->description ){
 					echo wpautop( wptexturize( $this->description ) );
 			}
-		}
-
-		/**
-		 * Genie CashBox cancel order from Genie CashBox server
-		 *
-		 * @return void
-		 */
-		public function genie_cashbox_order_cancel($gear_order_id){
-
 		}
 
 		/**
