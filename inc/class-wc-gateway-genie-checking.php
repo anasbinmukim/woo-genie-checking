@@ -269,8 +269,8 @@ class WC_Gateway_Genie_Checking extends WC_Payment_Gateway {
 						}
 
 						if(($status == 'approve') || ($status == 'approved')){
-								$order->reduce_order_stock();
 								$order->payment_complete();
+								$order->add_order_note( __('Genie Checking Payment Confirmed', 'woo-genie-checking') );
 						}
 
 						$redirect_url =  $order->get_checkout_order_received_url();
