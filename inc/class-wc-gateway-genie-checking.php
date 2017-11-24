@@ -162,7 +162,7 @@ class WC_Gateway_Genie_Checking extends WC_Payment_Gateway {
 			global $woocommerce;
 			if(!isset($_GET['geniechecking_callback'])){ return; }
 
-			$return_callback = $_GET['geniechecking_callback'];
+			$return_callback =  esc_url($_GET['geniechecking_callback']);
 
 			$var_callback = $this->decrypt_pol(substr($return_callback,1));  //Dycrypt Values
 
